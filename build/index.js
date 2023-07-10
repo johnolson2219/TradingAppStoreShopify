@@ -3,6 +3,7 @@ const app = express();
 const PORT = 3342;
 const apiKey = process.env.SHOPIFY_API_KEY;
 const apiSecret = process.env.SHOPIFY_API_SECRET;
+const emailTokenAccess = process.env.EMAIL_TOKEN_ACCESS;
 const scopes = "write_products";
 const forwardingAddress = "https://5da2-108-43-14-13.eu.ngrok.io"; // our ngrok url
 const fs = require('fs');
@@ -47,20 +48,47 @@ function createCatchyTextFile(fileContent) {
     })
 }
 
-// registerUser().then(() => {
-//     createCatchyTextFile()
-// });
+async function attachFileToOrder(orderId, fileUrl) {
+    const response = await axios.post(`https://app.digital-downloads.com/api/v1/orders/${orderId}/assets`, form, {
+        headers: {
+            ...form.getHeaders(),
+            'X-Shopify-Access-Token': accessToken,
+        },
+    });
 
-// function registerUser() {
-//     return new Promise((resoleve) => {
-//         setTimeout(() => {
-//             console.log('User registration success!');
-//             resolve();
-//         }, 2000);
-//     });
-// }
+    if (response.status === 200) {
+        const emailContent = `Dear customer, your download package is ready! Please click the link below to access your files:\n\n${fileUrl}?token=${emailTokenAccess}`;
+        await shopify.order.sendEmail(orderId, {
+            subject: 'Your Download Package is Ready',
+            body: emailContent,
+            send_to_customer: true
+        });
+        console.log('File attached to order successfully!');
+    } else {
+        console.log('Failed to attach file to order. Error:', response.data);
+    }
+}
 
-async function uploadFile(filePath) {
+async function getOrderId(customerNumber) {
+    try {
+        const orders = await shopify.order.list({ limit: 5 });
+        let orderId;
+        orders.forEach(order => {
+            if (order.customer.id === customerNumber) {
+                orderId = order.id;
+            }
+        });
+        if (orderId) {
+            return orderId;
+        } else {
+            throw new Error('Order not found for this customer');
+        }
+    } catch (error) {
+        console.error('Error getting order:', error);
+    }
+}
+
+async function uploadFile(filePath, customerId) {
     const file = fs.createReadStream(filePath);
     const form = new FormData();
     form.append('file', file);
@@ -76,6 +104,15 @@ async function uploadFile(filePath) {
             console.log('File uploaded successfully!');
             console.log('Asset ID:', response.data.id);
             console.log('Download URL:', response.data.download_url);
+
+            // Remove the txt file after successful upload
+            fs.unlinkSync(filePath);
+
+            // Get the Order ID
+            const orderId = await getOrderId(customerId);
+
+            // Attach the file to the order
+            await attachFileToOrder(orderId, response.data.download_url);
         } else {
             console.log('Failed to upload file. Error:', response.data);
         }
