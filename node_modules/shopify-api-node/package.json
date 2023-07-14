@@ -1,0 +1,58 @@
+{
+  "name": "shopify-api-node",
+  "version": "3.12.5",
+  "description": "Shopify API bindings for Node.js",
+  "main": "index.js",
+  "types": "types/index.d.ts",
+  "directories": {
+    "test": "test"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "files": [
+    "resources",
+    "mixins",
+    "index.js",
+    "types/index.d.ts"
+  ],
+  "dependencies": {
+    "got": "^11.1.4",
+    "lodash": "^4.17.10",
+    "qs": "^6.5.2",
+    "stopcock": "^1.0.0"
+  },
+  "devDependencies": {
+    "c8": "^7.3.0",
+    "chai": "^4.1.2",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.1",
+    "json-bigint": "^1.0.0",
+    "lint-staged": "^13.0.0",
+    "mocha": "^8.0.1",
+    "nock": "^13.0.1",
+    "prettier": "^2.0.2",
+    "tsd": "^0.25.0"
+  },
+  "scripts": {
+    "test": "c8 --reporter=lcov --reporter=text mocha",
+    "test:types": "tsd",
+    "watch": "mocha -w",
+    "lint": "eslint --ignore-path .gitignore . && prettier --check --ignore-path .gitignore \"**/*.{json,md,ts,yaml,yml}\"",
+    "prepare": "husky install"
+  },
+  "repository": "MONEI/Shopify-api-node",
+  "keywords": [
+    "Shopify",
+    "API",
+    "Client"
+  ],
+  "author": "alexandre saiz <a@alexandresaiz.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MONEI/Shopify-api-node/issues"
+  },
+  "homepage": "https://github.com/MONEI/Shopify-api-node"
+}
