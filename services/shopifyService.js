@@ -83,36 +83,33 @@ const uploadTextFile = async (filePath, customerId) => {
     const fileName = path.basename(filePath);
     const fileSize = stats.size;
     const fileMimeType = getFileMimeType(filePath);
-    console.log(customerId)
-    const orderId = await getOrderId(customerId);
-    console.log(orderId)
-    // try {
-    //     const response = await axios.post('/assets/signed', {
-    //         name: fileName,
-    //         size: fileSize,
-    //         mime: fileMimeType,
-    //     }).then((r) => r.data);
+    try {
+        const response = await axios.post('/assets/signed', {
+            name: fileName,
+            size: fileSize,
+            mime: fileMimeType,
+        }).then((r) => r.data);
 
-    //     if (response.file_url || true) {
-    //         // console.log('File uploaded successfully!');
-    //         // console.log('Asset ID:', response.data.id);
-    //         // console.log('Download URL:', response.data.download_url);
+        if (response.file_url || true) {
+            console.log('File uploaded successfully!');
+            console.log('Asset ID:', response.data.id);
+            console.log('Download URL:', response.data.download_url);
 
-    //         // Remove the txt file after successful upload
-    //         fs.unlinkSync(filePath);
+            // Remove the txt file after successful upload
+            fs.unlinkSync(filePath);
 
-    //         // Get the Order ID
-    //         const orderId = await getOrderId(customerId);
+            // Get the Order ID
+            const orderId = await getOrderId(customerId);
 
-    //         // Attach the file to the order
-    //         await attachDownloadUrlToOrder(orderId, "response.data.download_url");
-    //     } else {
-    //         console.log('Failed to upload file. Error:', response.data);
-    //     }
-    // }
-    // catch (error) {
-    //     console.log('Error occurred while uploading file:', error.message);
-    // }
+            // Attach the file to the order
+            await attachDownloadUrlToOrder(orderId, "response.data.download_url");
+        } else {
+            console.log('Failed to upload file. Error:', response.data);
+        }
+    }
+    catch (error) {
+        console.log('Error occurred while uploading file:', error.message);
+    }
 };
 
 module.exports = {
