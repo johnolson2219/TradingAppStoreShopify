@@ -10,6 +10,6 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => { res.send('Hello, welcome to my shopify node app!'); });
 app.use('/customer', customerRoutes);
 
-app.listen(30000, () => {
-  console.log('Server started on port 30000');
+app.listen(3000, () => {
+  console.log('Server started on port 3000');
 });                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
