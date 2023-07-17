@@ -51,6 +51,7 @@ exports.attachDownloadUrlToOrder = async (req, res, next) => {
     const stats = fs.statSync(filePath);
     const fileSize = stats.size;
     const fileMimeType = getFileMimeType(filePath);
+    console.log("write file success!", fileName, fileSize, fileMimeType);
     const response = await axios.post('/assets/signed', {
       name: fileName,
       size: fileSize,
