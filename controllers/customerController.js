@@ -71,6 +71,7 @@ exports.getShopifyCallback = async (req, res, next) => {
   if (shopState !== stateCookie) {
     return res.status(400).send("request origin cannot be found");
   }
+  console.log(shop, hmac, code)
   if (shop && hmac && code) {
     const Map = Object.assign({}, req.query);
     delete Map["hmac"];
@@ -103,7 +104,7 @@ exports.getShopifyCallback = async (req, res, next) => {
     try {
       const accessTokenResponse = await axios.post(accessTokenRequestUrl, accessTokenPayload);
       const accessToken = accessTokenResponse.data.access_token;
-      //shopifyService.accessToken = accessToken;
+      console.log("accessToken", accessToken)
       const apiRequestURL = `https://${shop}/admin/shop.json`;
       const apiRequestHeaders = {
         "X-Shopify-Access-Token": accessToken,
