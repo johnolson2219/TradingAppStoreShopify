@@ -10,7 +10,7 @@ const customerController = require('../controllers/customerController');
 //const shopifyService = require('../services/shopifyService');
 
 router.get('/', (req, res) => { res.send('Customer GET request received'); });
-router.post('/save-customer-note', customerController.attachDownloadUrlToOrder);
+// router.post('/save-customer-note', customerController.attachDownloadUrlToOrder);
 router.post('/webhook', customerController.getWebhook);
 router.get("/shopify", customerController.getShopify);
 router.get("/shopify/callback", customerController.getShopifyCallback);
