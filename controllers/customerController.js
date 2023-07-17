@@ -50,6 +50,7 @@ exports.attachDownloadUrlToOrder = async (req, res, next) => {
       fs.unlinkSync(filePath);
       // Get the orderId
       const orders = await shopify.order.list({});
+      console.log("orders", orders)
       let orderId;
       if (orders.length()) {
         orders.forEach(order => {
