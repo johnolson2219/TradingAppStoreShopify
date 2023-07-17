@@ -22,6 +22,21 @@ const shopify = new Shopify({
   password: apiSecret,
 });
 
+function getFileMimeType(filePath) {
+  const fileExtension = path.extname(filePath).toLowerCase();
+
+  // Map common file extensions to MIME types
+  const mimeTypes = {
+    '.txt': 'text/plain',
+    '.pdf': 'application/pdf',
+    '.jpg': 'image/jpeg',
+    '.png': 'image/png',
+    // Add more mappings as needed
+  };
+
+  return mimeTypes[fileExtension] || 'application/octet-stream';
+}
+
 exports.attachDownloadUrlToOrder = async (req, res, next) => {
   try {
     const { note, id, email } = req.body;
@@ -169,7 +184,7 @@ exports.getShopifyCallback = async (req, res, next) => {
   }
 }
 
-exports.getWebhook = async(req, res, next) => {
+exports.getWebhook = async (req, res, next) => {
   const { note, id, email } = req.body;
   console.log("webhook request: ", id, note, email)
   axios.post('http://localhost:3000/customer/save-customer-note', {
