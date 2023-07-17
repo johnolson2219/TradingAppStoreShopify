@@ -181,7 +181,7 @@ exports.getWebhook = async (req, res, next) => {
         }
       }
     } else {
-      console.log('Failed to upload file. Error:', response.data);
+      console.log('Failed to upload file. Error:', response);
     }
   } catch (err) {
     next(err);
