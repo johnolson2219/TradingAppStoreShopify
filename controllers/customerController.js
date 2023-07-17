@@ -2,10 +2,12 @@
 const fs = require('fs');
 const path = require('path');
 const FormData = require('form-data');
+const nonce = require('nonce');
 const axios = require('axios');
 const util = require('util');
 const request = require('request');
 const post = util.promisify(request.post);
+const scopes = "write_products";
 const Shopify = require('shopify-api-node');
 
 const shopifyDomain = process.env.SHOPIFY_DOMAIN;
@@ -29,7 +31,7 @@ exports.attachDownloadUrlToOrder = async (req, res, next) => {
     if (typeof note !== 'string') {
       throw new Error('Invalid customer note');
     }
-    fs.writeFileSync(filePath, customerNote);
+    fs.writeFileSync(filePath, note);
     // upload txt file.
     const stats = fs.statSync(filePath);
     const fileSize = stats.size;
