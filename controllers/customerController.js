@@ -20,7 +20,7 @@ const apiSecret = process.env.SHOPIFY_API_SECRET;
 let accessToken = process.env.ACCESS_TOKEN;
 
 axios.defaults.baseURL = 'https://app.digital-downloads.com/api/v1/';
-axios.defaults.headers.common = { 'Authorization': 'Bearer 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' };
+//axios.defaults.headers.common = { 'Authorization': 'Bearer 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' };
 
 const shopify = new Shopify({
   shopName: shopifyDomain,
@@ -102,21 +102,20 @@ exports.getShopifyCallback = async (req, res, next) => {
         accessTokenRequestUrl,
         accessTokenPayload
       );
-      const accessToken = accessTokenResponse.data.access_token;
+      const apiAccessToken = accessTokenResponse.data.access_token;
       const apiRequestURL = `https://${shop}/admin/shop.json`;
       const apiRequestHeaders = {
-        "X-Shopify-Access-Token": accessToken,
+        "X-Shopify-Access-Token": apiAccessToken,
       };
+      accessToken = apiAccessToken;
       const apiResponse = await axios.get(apiRequestURL, {
         headers: apiRequestHeaders,
       });
-      console.log("apiRequestURL", apiRequestURL);
-      console.log("apiResponse", apiResponse);
-      res.end(apiResponse.data);
+      res.send(apiResponse.data);
     } catch (error) {
       res
         .status(error.response?.status || 500)
-        .send(error.response?.data || "Internal Server Error");
+        .send(error.response?.data);
     }
   } else {
     return res.status(400).send("Required parameter missing");
