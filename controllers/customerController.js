@@ -8,6 +8,7 @@ const util = require('util');
 const request = require('request');
 const cookie = require('cookie');
 const querystring = require('querystring');
+const crypto = require('crypto');
 const post = util.promisify(request.post);
 const scopes = "write_products";
 const Shopify = require('shopify-api-node');
