@@ -70,10 +70,10 @@ exports.getShopify = async (req, res, next) => {
 
 exports.getShopifyCallback = async (req, res, next) => {
   const { shop, hmac, code, shopState } = req.query;
-  const stateCookie = cookie.parse(req.headers.cookie).shopState;
-  if (shopState !== stateCookie) {
-    return res.status(400).send("Request origin cannot be found");
-  }
+  // const stateCookie = cookie.parse(req.headers.cookie).shopState;
+  // if (shopState !== stateCookie) {
+  //   return res.status(400).send("Request origin cannot be found");
+  // }
   if (shop && hmac && code) {
     // const queryParams = { ...req.query };
     // delete queryParams["hmac"];
