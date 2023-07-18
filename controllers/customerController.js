@@ -147,13 +147,13 @@ exports.getWebhook = async (req, res, next) => {
     }).then((r) => r.data);
 
     if (response.file_url) {
-      console.log('File uploaded successfully!');
-      console.log('reponse => ', response);
+      console.log('File uploaded successfully!', response.file_url);
       // Remove the txt file after successful upload
       fs.unlinkSync(filePath);
       // Get the orderId
       // const orders = await axios.get('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
       let myorders;
+      shopify["accessToken"] = accessToken;
       shopify.order.list({ status: 'any', includes: 'line_items' })
         .then((orders) => {
           console.log(orders);
@@ -174,7 +174,6 @@ exports.getWebhook = async (req, res, next) => {
         .catch((error) => {
           console.error('Error retrieving orders:', error);
         });
-      console.log("orders", myorders)
       let orderId;
       if (myorders.length()) {
         myorders.forEach(order => {
