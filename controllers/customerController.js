@@ -74,54 +74,54 @@ exports.getShopifyCallback = async (req, res, next) => {
   if (shopState !== stateCookie) {
     return res.status(400).send("request origin cannot be found");
   }
-  console.log(shop, hmac, code)
-  if (shop && hmac && code) {
+  console.log(shop, hmac, code);
+   if (shop && hmac && code) {
     const Map = Object.assign({}, req.query);
     delete Map["hmac"];
     delete Map["signature"];
     const message = querystring.stringify(Map);
-    const providedHmac = Buffer.from(hmac, "utf-8");
-    const generatedHash = Buffer.from(
-      crypto
-        .createHmac("sha256", apiSecret)
-        .update(message)
-        .digest("hex"),
-      "utf-8"
+     const providedHmac = Buffer.from(hmac, "utf-8");
+    const generatedHash = crypto
+      .createHmac("sha256", apiSecret)
+      .update(message)
+      .digest("hex");
+     const hashEquals = crypto.timingSafeEqual(
+      Buffer.from(generatedHash, "utf-8"),
+      providedHmac
     );
-    let hashEquals = false;
-    try {
-      hashEquals = crypto.timingSafeEqual(generatedHash, providedHmac);
-    } catch (e) {
-      hashEquals = false;
-    }
-    if (!hashEquals) {
+     if (!hashEquals) {
       return res.status(400).send("HMAC validation failed");
     }
-    const accessTokenRequestUrl =
-      "https://" + shop + "/admin/oauth/access_token";
+     const accessTokenRequestUrl = `https://${shop}/admin/oauth/access_token`;
     const accessTokenPayload = {
       client_id: apiKey,
       client_secret: apiSecret,
       code,
     };
-    try {
-      const accessTokenResponse = await axios.post(accessTokenRequestUrl, accessTokenPayload);
+     try {
+      const accessTokenResponse = await axios.post(
+        accessTokenRequestUrl,
+        accessTokenPayload
+      );
       const accessToken = accessTokenResponse.data.access_token;
-      console.log("accessToken", accessToken)
-      const apiRequestURL = `https://${shop}/admin/shop.json`;
+      console.log("accessToken", accessToken);
+       const apiRequestURL = `https://${shop}/admin/shop.json`;
       const apiRequestHeaders = {
         "X-Shopify-Access-Token": accessToken,
       };
-      console.log(accessToken, shop)
-      // const apiResponse = await axios.get(apiRequestURL, { headers: apiRequestHeaders });
-      // res.end(apiResponse.data);
+       const apiResponse = await axios.get(apiRequestURL, {
+        headers: apiRequestHeaders,
+      });
+       res.end(apiResponse.data);
     } catch (error) {
-      res.status(error.response?.status || 500).send(error.response?.data || "Internal Server Error");
+      res
+        .status(error.response?.status || 500)
+        .send(error.response?.data || "Internal Server Error");
     }
   } else {
     return res.status(400).send("required parameter missing");
   }
-}
+};
 
 exports.getWebhook = async (req, res, next) => {
   try {
