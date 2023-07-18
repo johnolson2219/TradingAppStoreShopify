@@ -6,6 +6,7 @@ const nonce = require('nonce');
 const axios = require('axios');
 const util = require('util');
 const request = require('request');
+const cookie = require('cookie');
 const post = util.promisify(request.post);
 const scopes = "write_products";
 const Shopify = require('shopify-api-node');
