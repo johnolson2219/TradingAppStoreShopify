@@ -103,11 +103,11 @@ exports.getShopifyCallback = async (req, res, next) => {
         accessTokenPayload
       );
       const accessToken = accessTokenResponse.data.access_token;
-      console.log("accessToken", accessToken);
       const apiRequestURL = `https://${shop}/admin/shop.json`;
       const apiRequestHeaders = {
         "X-Shopify-Access-Token": accessToken,
       };
+      console.log("apiRequestURL", apiRequestURL);
       const apiResponse = await axios.get(apiRequestURL, {
         headers: apiRequestHeaders,
       });
