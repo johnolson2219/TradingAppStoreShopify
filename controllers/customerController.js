@@ -71,16 +71,15 @@ exports.getShopify = async (req, res, next) => {
 exports.getShopifyCallback = async (req, res, next) => {
   const { shop, hmac, code, shopState } = req.query;
   const stateCookie = cookie.parse(req.headers.cookie).shopState;
-  if (shopState !== stateCookie) {
-    return res.status(400).send("request origin cannot be found");
+   if (shopState !== stateCookie) {
+    return res.status(400).send("Request origin cannot be found");
   }
-  console.log(shop, hmac, code);
    if (shop && hmac && code) {
-    const Map = Object.assign({}, req.query);
-    delete Map["hmac"];
-    delete Map["signature"];
-    const message = querystring.stringify(Map);
-     const providedHmac = Buffer.from(hmac, "utf-8");
+    const queryParams = { ...req.query };
+    delete queryParams["hmac"];
+    delete queryParams["signature"];
+     const message = querystring.stringify(queryParams);
+    const providedHmac = Buffer.from(hmac, "utf-8");
     const generatedHash = crypto
       .createHmac("sha256", apiSecret)
       .update(message)
@@ -103,7 +102,7 @@ exports.getShopifyCallback = async (req, res, next) => {
         accessTokenRequestUrl,
         accessTokenPayload
       );
-      const accessToken = accessTokenResponse.data.access_token;
+       const accessToken = accessTokenResponse.data.access_token;
       console.log("accessToken", accessToken);
        const apiRequestURL = `https://${shop}/admin/shop.json`;
       const apiRequestHeaders = {
@@ -119,7 +118,7 @@ exports.getShopifyCallback = async (req, res, next) => {
         .send(error.response?.data || "Internal Server Error");
     }
   } else {
-    return res.status(400).send("required parameter missing");
+    return res.status(400).send("Required parameter missing");
   }
 };
 
