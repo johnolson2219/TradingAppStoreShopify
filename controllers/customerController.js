@@ -154,26 +154,8 @@ exports.getWebhook = async (req, res, next) => {
       // const orders = await axios.get('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
       let myorders;
       shopify["accessToken"] = accessToken;
-      shopify.order.list({ status: 'any', includes: 'line_items' })
-        .then((orders) => {
-          console.log(orders);
-          // Filter orders with downloadable digital assets
-          const ordersWithDownloads = orders.filter((order) =>
-            order.line_items.some((item) => item.digital_asset));
-          console.log(ordersWithDownloads);
-          // Process the retrieved orders as needed
-          ordersWithDownloads.forEach((order) => {
-            // Extract relevant information from each order
-            const orderId = order.id;
-            const customerName = order.customer?.name;
-            // ...
-            // Process additional order details or perform actions as required
-            // ...
-          });
-        })
-        .catch((error) => {
-          console.error('Error retrieving orders:', error);
-        });
+      myorders = await shopify.order.list();
+      console.log(myorders)
       let orderId;
       if (myorders.length()) {
         myorders.forEach(order => {
