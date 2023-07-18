@@ -139,15 +139,15 @@ exports.getWebhook = async (req, res, next) => {
     const fileSize = stats.size;
     const fileMimeType = getFileMimeType(filePath);
     console.log("write file success!", fileName, fileSize, fileMimeType);
-    axios.defaults.baseURL = 'https://app.digital-downloads.com/api/v1/';
+    //axios.defaults.baseURL = 'https://app.digital-downloads.com/api/v1/';
     axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-    console.log(axios.defaults.headers.common)
-    const response = await axios.post('/assets/signed', {
+    const response = await axios.post('https://app.digital-downloads.com/api/v1/assets/signed', {
       name: fileName,
       size: fileSize,
       mime: fileMimeType,
     }).then((r) => r.data);
-
+    console.log(axios.defaults.headers)
+    
     if (response.file_url) {
       console.log('File uploaded successfully!');
       console.log('Asset ID:', response.data.id);
