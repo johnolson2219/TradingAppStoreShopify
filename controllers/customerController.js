@@ -141,6 +141,8 @@ exports.getWebhook = async (req, res, next) => {
     console.log("write file success!", fileName, fileSize, fileMimeType);
     //axios.defaults.baseURL = 'https://app.digital-downloads.com/api/v1/';
     axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
+    
     const response = await axios.post('https://app.digital-downloads.com/api/v1/assets/signed', {
       name: fileName,
       size: fileSize,
