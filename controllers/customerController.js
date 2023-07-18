@@ -66,11 +66,11 @@ exports.getShopify = async (req, res, next) => {
 }
 
 exports.getShopifyCallback = async (req, res, next) => {
-  const { shop, code, state } = req.query;
-  const stateCookie = req.cookies.state;
-  if (state !== stateCookie) {
-    return res.status(403).send('Request origin cannot be verified');
-  }
+  // const { shop, code, state } = req.query;
+  // const stateCookie = req.cookies.state;
+  // if (state !== stateCookie) {
+  //   return res.status(403).send('Request origin cannot be verified');
+  // }
   const redirectUri = `${forwardingAddress}/shopify/callback`;
   shopify["shopName"] = shop;
   shopify["apiKey"] = apiKey;
