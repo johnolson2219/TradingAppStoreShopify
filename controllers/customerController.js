@@ -140,7 +140,8 @@ exports.getWebhook = async (req, res, next) => {
     const fileMimeType = getFileMimeType(filePath);
     console.log("write file success!", fileName, fileSize, fileMimeType);
     axios.defaults.baseURL = 'https://app.digital-downloads.com/api/v1/';
-    axios.defaults.headers.common['Authorization'] = accessToken;
+    console.log('Bearer ${accessToken}')
+    axios.defaults.headers.common['Authorization'] = 'Bearer ${accessToken}';
     const response = await axios.post('/assets/signed', {
       name: fileName,
       size: fileSize,
@@ -167,7 +168,7 @@ exports.getWebhook = async (req, res, next) => {
       if (!orderId) {
         console.log("Order not found for this customer");
       } else {
-        console.log("sucess find order!");
+        console.log("success find order!");
         const response = await axios.post(`https://app.digital-downloads.com/api/v1/orders/${orderId}/assets`, form, {
           headers: {
             ...form.getHeaders(),
