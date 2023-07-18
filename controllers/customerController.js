@@ -66,57 +66,26 @@ exports.getShopify = async (req, res, next) => {
 }
 
 exports.getShopifyCallback = async (req, res, next) => {
-  const { shop, hmac, code, shopState } = req.query;
-  // const stateCookie = cookie.parse(req.headers.cookie).shopState;
-  // if (shopState !== stateCookie) {
-  //   return res.status(400).send("Request origin cannot be found");
-  // }
-  if (shop && hmac && code) {
-    // const queryParams = { ...req.query };
-    // delete queryParams["hmac"];
-    // delete queryParams["signature"];
-    // const message = querystring.stringify(queryParams);
-    // const providedHmac = Buffer.from(hmac, "utf-8");
-    // const generatedHash = crypto
-    //   .createHmac("sha256", apiSecret)
-    //   .update(message)
-    //   .digest("hex");
-    // const hashEquals = crypto.timingSafeEqual(
-    //   Buffer.from(generatedHash, "utf-8"),
-    //   providedHmac
-    // );
-    // if (!hashEquals) {
-    //   return res.status(400).send("HMAC validation failed");
-    // }
-    const accessTokenRequestUrl = `https://${shop}/admin/oauth/access_token`;
-    const accessTokenPayload = {
-      client_id: apiKey,
-      client_secret: apiSecret,
-      code,
-    };
-    try {
-      const accessTokenResponse = await axios.post(
-        accessTokenRequestUrl,
-        accessTokenPayload
-      );
-      const apiAccessToken = accessTokenResponse.data.access_token;
-      const apiRequestURL = `https://${shop}/admin/shop.json`;
-      const apiRequestHeaders = {
-        "X-Shopify-Access-Token": apiAccessToken,
-      };
-      accessToken = apiAccessToken;
-      const apiResponse = await axios.get(apiRequestURL, {
-        headers: apiRequestHeaders,
-      });
-      res.send(apiResponse.data);
-    } catch (error) {
-      res
-        .status(error.response?.status || 500)
-        .send(error.response?.data);
-    }
-  } else {
-    return res.status(400).send("Required parameter missing");
+  const { shop, code, state } = req.query;
+  const stateCookie = req.cookies.state;
+  if (state !== stateCookie) {
+    return res.status(403).send('Request origin cannot be verified');
   }
+  const redirectUri = `${forwardingAddress}/shopify/callback`;
+  shopify["shopName"] = shop;
+  shopify["apiKey"] = apiKey;
+  shopify["password"] = apiSecret;
+  shopify.oauth
+    .accessToken(code, { redirectUri })
+    .then((accessToken) => {
+      // Store the access token in the database or session
+      console.log(`Access token: ${accessToken}`);
+      res.send('Authorization successful!');
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Something went wrong. Please try again later.');
+    });
 };
 
 exports.getWebhook = async (req, res, next) => {
