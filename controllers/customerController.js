@@ -152,17 +152,38 @@ exports.getWebhook = async (req, res, next) => {
       // Remove the txt file after successful upload
       fs.unlinkSync(filePath);
       // Get the orderId
-      const orders = await axios.get('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
-      console.log("orders", orders)
+      // const orders = await axios.get('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
+      let myorders;
+      shopify.order.list({ status: 'any', includes: 'line_items' })
+        .then((orders) => {
+          console.log(orders);
+          // Filter orders with downloadable digital assets
+          const ordersWithDownloads = orders.filter((order) =>
+            order.line_items.some((item) => item.digital_asset));
+          console.log(ordersWithDownloads);
+          // Process the retrieved orders as needed
+          ordersWithDownloads.forEach((order) => {
+            // Extract relevant information from each order
+            const orderId = order.id;
+            const customerName = order.customer?.name;
+            // ...
+            // Process additional order details or perform actions as required
+            // ...
+          });
+        })
+        .catch((error) => {
+          console.error('Error retrieving orders:', error);
+        });
+      console.log("orders", myorders)
       let orderId;
-      if (orders.length()) {
-        orders.forEach(order => {
+      if (myorders.length()) {
+        myorders.forEach(order => {
           if (order.customer.id === id) {
             orderId = order.id;
           }
         });
       }
-      console.log|("orderId", orderId);
+      console.log("orderId", orderId);
       if (!orderId) {
         console.log("Order not found for this customer");
       } else {
