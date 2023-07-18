@@ -20,7 +20,7 @@ const apiSecret = process.env.SHOPIFY_API_SECRET;
 let accessToken = process.env.ACCESS_TOKEN;
 
 axios.defaults.baseURL = 'https://app.digital-downloads.com/api/v1/';
-axios.defaults.headers.common = { 'Authorization': 'Bearer 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' };
+axios.defaults.headers.common = { 'Authorization': 'Bearer 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' };
 
 const shopify = new Shopify({
   shopName: shopifyDomain,
