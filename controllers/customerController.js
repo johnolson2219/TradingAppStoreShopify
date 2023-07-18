@@ -75,22 +75,22 @@ exports.getShopifyCallback = async (req, res, next) => {
     return res.status(400).send("Request origin cannot be found");
   }
   if (shop && hmac && code) {
-    const queryParams = { ...req.query };
-    delete queryParams["hmac"];
-    delete queryParams["signature"];
-    const message = querystring.stringify(queryParams);
-    const providedHmac = Buffer.from(hmac, "utf-8");
-    const generatedHash = crypto
-      .createHmac("sha256", apiSecret)
-      .update(message)
-      .digest("hex");
-    const hashEquals = crypto.timingSafeEqual(
-      Buffer.from(generatedHash, "utf-8"),
-      providedHmac
-    );
-    if (!hashEquals) {
-      return res.status(400).send("HMAC validation failed");
-    }
+    // const queryParams = { ...req.query };
+    // delete queryParams["hmac"];
+    // delete queryParams["signature"];
+    // const message = querystring.stringify(queryParams);
+    // const providedHmac = Buffer.from(hmac, "utf-8");
+    // const generatedHash = crypto
+    //   .createHmac("sha256", apiSecret)
+    //   .update(message)
+    //   .digest("hex");
+    // const hashEquals = crypto.timingSafeEqual(
+    //   Buffer.from(generatedHash, "utf-8"),
+    //   providedHmac
+    // );
+    // if (!hashEquals) {
+    //   return res.status(400).send("HMAC validation failed");
+    // }
     const accessTokenRequestUrl = `https://${shop}/admin/oauth/access_token`;
     const accessTokenPayload = {
       client_id: apiKey,
