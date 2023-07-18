@@ -19,9 +19,6 @@ const apiKey = process.env.SHOPIFY_API_KEY;
 const apiSecret = process.env.SHOPIFY_API_SECRET;
 let accessToken = process.env.ACCESS_TOKEN;
 
-axios.defaults.baseURL = 'https://app.digital-downloads.com/api/v1/';
-//axios.defaults.headers.common = { 'Authorization': 'Bearer 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' };
-
 const shopify = new Shopify({
   shopName: shopifyDomain,
   apiKey: apiKey,
@@ -142,6 +139,8 @@ exports.getWebhook = async (req, res, next) => {
     const fileSize = stats.size;
     const fileMimeType = getFileMimeType(filePath);
     console.log("write file success!", fileName, fileSize, fileMimeType);
+    axios.defaults.baseURL = 'https://app.digital-downloads.com/api/v1/';
+    axios.defaults.headers.common['Authorization'] = accessToken;
     const response = await axios.post('/assets/signed', {
       name: fileName,
       size: fileSize,
