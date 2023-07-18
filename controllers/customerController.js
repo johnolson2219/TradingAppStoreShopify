@@ -140,7 +140,6 @@ exports.getWebhook = async (req, res, next) => {
     const fileMimeType = getFileMimeType(filePath);
     console.log("write file success!", fileName, fileSize, fileMimeType);
     axios.defaults.headers.common['Authorization'] = `Bearer iiZjHZEvapccAgmTQC3CLHH3Pi0DEFGtSqUQ7LjW2Hp3dbpCbQMxE7OdhoSznY0PSdI9l`;
-    console.log(axios.defaults.headers.common)
     const response = await axios.post('https://app.digital-downloads.com/api/v1/assets/signed', {
       name: fileName,
       size: fileSize,
@@ -149,21 +148,21 @@ exports.getWebhook = async (req, res, next) => {
 
     if (response.file_url) {
       console.log('File uploaded successfully!');
-      console.log('Asset ID:', response.data.id);
-      console.log('Download URL:', response.data.download_url);
+      console.log('reponse => ', response);
       // Remove the txt file after successful upload
       fs.unlinkSync(filePath);
       // Get the orderId
-      const orders = await shopify.order.list({});
+      const orders = await axios.post('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
       console.log("orders", orders)
       let orderId;
       if (orders.length()) {
         orders.forEach(order => {
-          if (order.customer.id === customerId) {
+          if (order.customer.id === id) {
             orderId = order.id;
           }
         });
       }
+      console.log|("orderId", orderId);
       if (!orderId) {
         console.log("Order not found for this customer");
       } else {
