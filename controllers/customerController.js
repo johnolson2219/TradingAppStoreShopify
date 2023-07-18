@@ -152,7 +152,7 @@ exports.getWebhook = async (req, res, next) => {
       // Remove the txt file after successful upload
       fs.unlinkSync(filePath);
       // Get the orderId
-      const orders = await axios.post('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
+      const orders = await axios.get('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
       console.log("orders", orders)
       let orderId;
       if (orders.length()) {
