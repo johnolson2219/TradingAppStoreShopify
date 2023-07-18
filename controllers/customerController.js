@@ -71,47 +71,47 @@ exports.getShopify = async (req, res, next) => {
 exports.getShopifyCallback = async (req, res, next) => {
   const { shop, hmac, code, shopState } = req.query;
   const stateCookie = cookie.parse(req.headers.cookie).shopState;
-   if (shopState !== stateCookie) {
+  if (shopState !== stateCookie) {
     return res.status(400).send("Request origin cannot be found");
   }
-   if (shop && hmac && code) {
+  if (shop && hmac && code) {
     const queryParams = { ...req.query };
     delete queryParams["hmac"];
     delete queryParams["signature"];
-     const message = querystring.stringify(queryParams);
+    const message = querystring.stringify(queryParams);
     const providedHmac = Buffer.from(hmac, "utf-8");
     const generatedHash = crypto
       .createHmac("sha256", apiSecret)
       .update(message)
       .digest("hex");
-     const hashEquals = crypto.timingSafeEqual(
+    const hashEquals = crypto.timingSafeEqual(
       Buffer.from(generatedHash, "utf-8"),
       providedHmac
     );
-     if (!hashEquals) {
+    if (!hashEquals) {
       return res.status(400).send("HMAC validation failed");
     }
-     const accessTokenRequestUrl = `https://${shop}/admin/oauth/access_token`;
+    const accessTokenRequestUrl = `https://${shop}/admin/oauth/access_token`;
     const accessTokenPayload = {
       client_id: apiKey,
       client_secret: apiSecret,
       code,
     };
-     try {
+    try {
       const accessTokenResponse = await axios.post(
         accessTokenRequestUrl,
         accessTokenPayload
       );
-       const accessToken = accessTokenResponse.data.access_token;
+      const accessToken = accessTokenResponse.data.access_token;
       console.log("accessToken", accessToken);
-       const apiRequestURL = `https://${shop}/admin/shop.json`;
+      const apiRequestURL = `https://${shop}/admin/shop.json`;
       const apiRequestHeaders = {
         "X-Shopify-Access-Token": accessToken,
       };
-       const apiResponse = await axios.get(apiRequestURL, {
+      const apiResponse = await axios.get(apiRequestURL, {
         headers: apiRequestHeaders,
       });
-       res.end(apiResponse.data);
+      res.end(apiResponse.data);
     } catch (error) {
       res
         .status(error.response?.status || 500)
@@ -127,9 +127,14 @@ exports.getWebhook = async (req, res, next) => {
     const { note, id, email } = req.body;
     // generate txt file. 
     const fileName = `customer_note_${Date.now()}.txt`;
-    const filePath = path.join(__dirname, '..', 'views', fileName);
+    const dirPath = path.join(__dirname, '..', 'views');
+    const filePath = path.join(dirPath, fileName);
     if (typeof note !== 'string') {
       throw new Error('Invalid customer note');
+    }
+    // Check if directory exists, if not, create it
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath);
     }
     fs.writeFileSync(filePath, note);
     // upload txt file.
