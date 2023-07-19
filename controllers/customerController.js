@@ -159,6 +159,7 @@ exports.getWebhook = async (req, res, next) => {
         const apiOrderHeaders = {
           "X-Shopify-Access-Token": accessToken,
         };
+        delete axios.defaults.headers.common.Authorization;
         const apiResponse = await axios.get(apiOrderURL, {
           headers: apiOrderHeaders,
         });
