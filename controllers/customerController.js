@@ -153,10 +153,11 @@ exports.getWebhook = async (req, res, next) => {
       // Get the orderId
       // const orders = await axios.get('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
       let myorders;
-      const apiOrderURL = `https://${shop}/admin/shop.json`;
+      const apiOrderURL = `https://${shopifyDomain}/admin/shop.json`;
       const apiOrderHeaders = {
         "X-Shopify-Access-Token": accessToken,
       };
+      console.log(apiOrderURL)
       const apiResponse = await axios.get(apiOrderURL, {
         headers: apiOrderHeaders,
       });
