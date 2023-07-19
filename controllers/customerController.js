@@ -104,6 +104,7 @@ exports.getShopifyCallback = async (req, res, next) => {
       const apiRequestHeaders = {
         "X-Shopify-Access-Token": apiAccessToken,
       };
+      console.log("accessToken", apiAccessToken)
       accessToken = apiAccessToken;
       const apiResponse = await axios.get(apiRequestURL, {
         headers: apiRequestHeaders,
@@ -154,6 +155,7 @@ exports.getWebhook = async (req, res, next) => {
       // const orders = await axios.get('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
       let myorders;
       const apiOrderURL = `https://${shopifyDomain}/admin/orders.json`;
+      console.log("accessToken", accessToken)
       const apiOrderHeaders = {
         "X-Shopify-Access-Token": accessToken,
       };
