@@ -26,7 +26,7 @@ const shopify = new Shopify({
 });
 
 async function getOrders() {
-  const url = `https://${shopifyDomain}/admin/api/2021-07/orders.json`;
+  const url = `https://${shopifyDomain}/admin/orders.json`;
   const auth = {
     username: apiKey,
     password: apiSecret
