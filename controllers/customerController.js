@@ -25,22 +25,6 @@ const shopify = new Shopify({
   password: apiSecret,
 });
 
-async function getOrders() {
-  const url = `https://${shopifyDomain}/admin/orders.json`;
-  const auth = {
-    username: apiKey,
-    password: apiSecret
-  };
-
-  try {
-    const response = await axios.get(url, { auth });
-    const orders = response.data.orders;
-    console.log('Orders:', orders);
-  } catch (error) {
-    console.error('Failed to get orders:', error.response.data);
-  }
-}
-
 function getFileMimeType(filePath) {
   const fileExtension = path.extname(filePath).toLowerCase();
 
@@ -170,9 +154,14 @@ exports.getWebhook = async (req, res, next) => {
       fs.unlinkSync(filePath);
       // Get the orderId
       let myorders;
-      // const orderResponse = await axios.get('https://app.digital-downloads.com/api/v1/orders');
-      getOrders();
-      // myorders = orderResponse.data;
+      const apiRequestURL = `https://${shopifyDomain}/admin/orders.json`;
+      const apiRequestHeaders = {
+        "X-Shopify-Access-Token": apiAccessToken,
+      };
+      const orderResponse = await axios.get(apiRequestURL, {
+        headers: apiRequestHeaders,
+      });
+      myorders = orderResponse.data;
       console.log(myorders)
       let orderId;
       if (myorders.length) {
