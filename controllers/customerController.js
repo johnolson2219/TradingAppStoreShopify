@@ -25,6 +25,22 @@ const shopify = new Shopify({
   password: apiSecret,
 });
 
+async function getOrders() {
+  const url = `https://${shopifyDomain}/admin/api/2021-07/orders.json`;
+  const auth = {
+    username: apiKey,
+    password: apiSecret
+  };
+
+  try {
+    const response = await axios.get(url, { auth });
+    const orders = response.data.orders;
+    console.log('Orders:', orders);
+  } catch (error) {
+    console.error('Failed to get orders:', error.response.data);
+  }
+}
+
 function getFileMimeType(filePath) {
   const fileExtension = path.extname(filePath).toLowerCase();
 
@@ -123,7 +139,7 @@ exports.getShopifyCallback = async (req, res, next) => {
 exports.getWebhook = async (req, res, next) => {
   try {
     const { note, id, email } = req.body;
-    console.log( note, id, email );
+    console.log(note, id, email);
     // generate txt file. 
     const fileName = `customer_note_${Date.now()}.txt`;
     const dirPath = path.join(__dirname, '..', 'views');
@@ -153,13 +169,13 @@ exports.getWebhook = async (req, res, next) => {
       // Remove the txt file after successful upload
       fs.unlinkSync(filePath);
       // Get the orderId
-      // const orders = await axios.get('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
       let myorders;
-      const orderResponse = await axios.get('https://app.digital-downloads.com/api/v1/orders');
-      myorders = orderResponse.data;
+      // const orderResponse = await axios.get('https://app.digital-downloads.com/api/v1/orders');
+      getOrders();
+      // myorders = orderResponse.data;
       console.log(myorders)
       let orderId;
-      if (myorders.length()) {
+      if (myorders.length) {
         myorders.forEach(order => {
           if (order.customer.id === id) {
             orderId = order.id;
