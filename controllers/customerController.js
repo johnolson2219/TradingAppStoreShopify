@@ -162,7 +162,8 @@ exports.getWebhook = async (req, res, next) => {
         const apiResponse = await axios.get(apiOrderURL, {
           headers: apiOrderHeaders,
         });
-        console.log(apiResponse.data);
+        console.log(apiResponse);
+        myorders = apiResponse.data;
       } catch (error) {
         console.error(error);
       }
