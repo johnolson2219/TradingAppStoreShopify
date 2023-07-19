@@ -123,6 +123,7 @@ exports.getShopifyCallback = async (req, res, next) => {
 exports.getWebhook = async (req, res, next) => {
   try {
     const { note, id, email } = req.body;
+    console.log( note, id, email );
     // generate txt file. 
     const fileName = `customer_note_${Date.now()}.txt`;
     const dirPath = path.join(__dirname, '..', 'views');
@@ -154,8 +155,9 @@ exports.getWebhook = async (req, res, next) => {
       // Get the orderId
       // const orders = await axios.get('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
       let myorders;
-      const orderResponse = await axios.post('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
+      const orderResponse = await axios.get('https://app.digital-downloads.com/api/v1/orders');
       myorders = orderResponse.data;
+      console.log(myorders)
       let orderId;
       if (myorders.length()) {
         myorders.forEach(order => {
