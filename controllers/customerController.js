@@ -156,7 +156,7 @@ exports.getWebhook = async (req, res, next) => {
       let myorders;
       const apiRequestURL = `https://${shopifyDomain}/admin/orders.json`;
       const apiRequestHeaders = {
-        "X-Shopify-Access-Token": apiAccessToken,
+        "X-Shopify-Access-Token": accessToken,
       };
       const orderResponse = await axios.get(apiRequestURL, {
         headers: apiRequestHeaders,
