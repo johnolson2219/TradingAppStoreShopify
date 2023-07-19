@@ -161,7 +161,7 @@ exports.getWebhook = async (req, res, next) => {
       const apiResponse = await axios.get(apiOrderURL, {
         headers: apiOrderHeaders,
       });
-      console.loog(apiResponse)
+      console.log(apiResponse)
       let orderId;
       if (myorders.length()) {
         myorders.forEach(order => {
