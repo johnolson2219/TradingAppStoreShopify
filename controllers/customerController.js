@@ -10,7 +10,7 @@ const cookie = require('cookie');
 const querystring = require('querystring');
 const crypto = require('crypto');
 const post = util.promisify(request.post);
-const scopes = "write_products";
+const scopes = "read_orders,write_orders,send_emails";
 const Shopify = require('shopify-api-node');
 
 const shopifyDomain = process.env.SHOPIFY_DOMAIN;
@@ -154,16 +154,18 @@ exports.getWebhook = async (req, res, next) => {
       // Get the orderId
       // const orders = await axios.get('https://app.digital-downloads.com/api/v1/orders').then((r) => r.data);
       let myorders;
-      const apiOrderURL = `https://${shopifyDomain}/admin/orders.json`;
-      console.log("accessToken", accessToken)
-      const apiOrderHeaders = {
-        "X-Shopify-Access-Token": accessToken,
-      };
-      console.log(apiOrderURL)
-      const apiResponse = await axios.get(apiOrderURL, {
-        headers: apiOrderHeaders,
-      });
-      console.log(apiResponse)
+      try {
+        const apiOrderURL = `https://${shopifyDomain}/admin/orders.json`;
+        const apiOrderHeaders = {
+          "X-Shopify-Access-Token": accessToken,
+        };
+        const apiResponse = await axios.get(apiOrderURL, {
+          headers: apiOrderHeaders,
+        });
+        console.log(apiResponse.data);
+      } catch (error) {
+        console.error(error);
+      }
       let orderId;
       if (myorders.length()) {
         myorders.forEach(order => {
