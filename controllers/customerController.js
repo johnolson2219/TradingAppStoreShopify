@@ -10,7 +10,7 @@ const cookie = require('cookie');
 const querystring = require('querystring');
 const crypto = require('crypto');
 const post = util.promisify(request.post);
-const scopes = "read_orders";
+const scopes = write_products;
 const Shopify = require('shopify-api-node');
 
 const shopifyDomain = process.env.SHOPIFY_DOMAIN;
