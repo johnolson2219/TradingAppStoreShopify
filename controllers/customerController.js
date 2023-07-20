@@ -10,7 +10,7 @@ const cookie = require('cookie');
 const querystring = require('querystring');
 const crypto = require('crypto');
 const post = util.promisify(request.post);
-const scopes = ["write_products", "read_orders", "write_orders"];
+const scopes = ["write_products", "read_orders", "write_orders", "write_merchant_managed_fulfillment_orders"];
 const Shopify = require('shopify-api-node');
 
 const shopifyDomain = process.env.SHOPIFY_DOMAIN;
@@ -170,12 +170,12 @@ exports.getWebhook = async (req, res, next) => {
         console.log("Order not found for this customer");
       } else {
         console.log("success find order!");
-        const response = await axios.post(`https://app.digital-downloads.com/api/v1/orders/${orderId}/assets`, form, {
-          headers: {
-            ...form.getHeaders(),
-            'X-Shopify-Access-Token': accessToken,
-          },
-        });
+        // const response = await axios.post(`https://app.digital-downloads.com/api/v1/orders/${orderId}/assets`, form, {
+        //   headers: {
+        //     ...form.getHeaders(),
+        //     'X-Shopify-Access-Token': accessToken,
+        //   },
+        // });
         if (response.status === 200) {
           const emailContent = `Dear customer, your download package is ready! Please click the link below to access your files:\n\n${fileUrl}?token=${emailTokenAccess}`;
           await shopify.order.sendEmail(orderId, {
