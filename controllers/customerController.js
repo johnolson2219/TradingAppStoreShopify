@@ -10,7 +10,7 @@ const cookie = require('cookie');
 const querystring = require('querystring');
 const crypto = require('crypto');
 const post = util.promisify(request.post);
-const scopes = ["write_products", "read_orders"];
+const scopes = ["read_orders", "write_orders", "write_merchant_managed_fulfillment_orders"];
 const Shopify = require('shopify-api-node');
 
 const shopifyDomain = process.env.SHOPIFY_DOMAIN;
@@ -18,8 +18,7 @@ const forwardingAddress = process.env.FORWARDING_ADDRESS; // our ngrok url
 const apiKey = process.env.SHOPIFY_API_KEY;
 const apiSecret = process.env.SHOPIFY_API_SECRET;
 let accessToken = process.env.ACCESS_TOKEN;
-let myorders;
-      
+
 const shopify = new Shopify({
   shopName: shopifyDomain,
   apiKey: apiKey,
@@ -72,7 +71,7 @@ exports.getShopifyCallback = async (req, res, next) => {
   // if (shopState !== stateCookie) {
   //   return res.status(400).send("Request origin cannot be found");
   // }
-  if (shop) {
+  if (shop && hmac && code) {
     // const queryParams = { ...req.query };
     // delete queryParams["hmac"];
     // delete queryParams["signature"];
@@ -125,7 +124,7 @@ exports.getWebhook = async (req, res, next) => {
   try {
     const { note, id, email } = req.body;
     console.log(note, id, email);
-    // generate txt file. 1
+    // generate txt file. 
     const fileName = `customer_note_${Date.now()}.txt`;
     const dirPath = path.join(__dirname, '..', 'views');
     const filePath = path.join(dirPath, fileName);
@@ -154,6 +153,7 @@ exports.getWebhook = async (req, res, next) => {
       // Remove the txt file after successful upload
       fs.unlinkSync(filePath);
       // Get the orderId
+      let myorders;
       const orderResponse = await axios.get('https://app.digital-downloads.com/api/v1/orders');
       myorders = orderResponse.data;
       console.log(myorders)
