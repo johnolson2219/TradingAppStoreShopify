@@ -115,7 +115,7 @@ exports.getShopifyCallback = async (req, res, next) => {
         path: 'orders',
         query: { status: 'any' },
       });
-      res.send(apiResponse.data);
+      res.send(data);
     } catch (error) {
       res
         .status(error.response?.status || 500)
