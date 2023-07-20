@@ -26,7 +26,7 @@ const shopify = new Shopify({
   password: apiSecret,
 });
 
-nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   host: "smtp-mail.outlook.com",
   port: 587,
   secure: false,
