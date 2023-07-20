@@ -18,6 +18,7 @@ const forwardingAddress = process.env.FORWARDING_ADDRESS; // our ngrok url
 const apiKey = process.env.SHOPIFY_API_KEY;
 const apiSecret = process.env.SHOPIFY_API_SECRET;
 let accessToken = process.env.ACCESS_TOKEN;
+let myorders;
 
 const shopify = new Shopify({
   shopName: shopifyDomain,
@@ -109,6 +110,11 @@ exports.getShopifyCallback = async (req, res, next) => {
       const apiResponse = await axios.get(apiRequestURL, {
         headers: apiRequestHeaders,
       });
+      apiRequestURL = `https://${shop}/admin/orders.json`;
+      const orderResponse = await axios.get(apiRequestURL, {
+        headers: apiRequestHeaders,
+      });
+      console.log(orderResponse.data)
       res.send(apiResponse.data);
     } catch (error) {
       res
@@ -124,7 +130,7 @@ exports.getWebhook = async (req, res, next) => {
   try {
     const { note, id, email } = req.body;
     console.log(note, id, email);
-    // generate txt file. 
+    // generate txt file. 1
     const fileName = `customer_note_${Date.now()}.txt`;
     const dirPath = path.join(__dirname, '..', 'views');
     const filePath = path.join(dirPath, fileName);
@@ -153,7 +159,6 @@ exports.getWebhook = async (req, res, next) => {
       // Remove the txt file after successful upload
       fs.unlinkSync(filePath);
       // Get the orderId
-      let myorders;
       const orderResponse = await axios.get('https://app.digital-downloads.com/api/v1/orders');
       myorders = orderResponse.data;
       console.log(myorders)
