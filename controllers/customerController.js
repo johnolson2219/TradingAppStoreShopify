@@ -19,7 +19,7 @@ const apiKey = process.env.SHOPIFY_API_KEY;
 const apiSecret = process.env.SHOPIFY_API_SECRET;
 let accessToken = process.env.ACCESS_TOKEN;
 let myorders;
-
+      
 const shopify = new Shopify({
   shopName: shopifyDomain,
   apiKey: apiKey,
@@ -101,7 +101,7 @@ exports.getShopifyCallback = async (req, res, next) => {
         accessTokenPayload
       );
       const apiAccessToken = accessTokenResponse.data.access_token;
-      const apiRequestURL = `https://${shop}/admin/shop.json`;
+      const apiRequestURL = `https://${shop}/admin/orders.json`;
       const apiRequestHeaders = {
         "X-Shopify-Access-Token": apiAccessToken,
       };
@@ -110,11 +110,6 @@ exports.getShopifyCallback = async (req, res, next) => {
       const apiResponse = await axios.get(apiRequestURL, {
         headers: apiRequestHeaders,
       });
-      apiRequestURL = `https://${shop}/admin/orders.json`;
-      const orderResponse = await axios.get(apiRequestURL, {
-        headers: apiRequestHeaders,
-      });
-      console.log(orderResponse.data)
       res.send(apiResponse.data);
     } catch (error) {
       res
