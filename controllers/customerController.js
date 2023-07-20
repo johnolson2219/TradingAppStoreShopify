@@ -100,14 +100,20 @@ exports.getShopifyCallback = async (req, res, next) => {
         accessTokenPayload
       );
       const apiAccessToken = accessTokenResponse.data.access_token;
-      const apiRequestURL = `https://${shop}/admin/orders.json`;
-      const apiRequestHeaders = {
-        "X-Shopify-Access-Token": apiAccessToken,
-      };
-      console.log("accessToken", apiAccessToken)
-      accessToken = apiAccessToken;
-      const apiResponse = await axios.get(apiRequestURL, {
-        headers: apiRequestHeaders,
+      // const apiRequestURL = `https://${shop}/admin/orders.json`;
+      // const apiRequestHeaders = {
+      //   "X-Shopify-Access-Token": apiAccessToken,
+      // };
+      // console.log("accessToken", apiAccessToken)
+      // accessToken = apiAccessToken;
+      // const apiResponse = await axios.get(apiRequestURL, {
+      //   headers: apiRequestHeaders,
+      // });
+      // res.send(apiResponse.data);
+      const client = new Shopify.Clients.Rest(shop, apiAccessToken);
+      const data = await client.get({
+        path: 'orders',
+        query: { status: 'any' },
       });
       res.send(apiResponse.data);
     } catch (error) {
