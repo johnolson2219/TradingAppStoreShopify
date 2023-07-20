@@ -10,6 +10,7 @@ const cookie = require('cookie');
 const querystring = require('querystring');
 const crypto = require('crypto');
 const post = util.promisify(request.post);
+let nodemailer = require('nodemailer');
 const scopes = ["read_orders", "write_orders", "write_merchant_managed_fulfillment_orders"];
 const Shopify = require('shopify-api-node');
 
@@ -23,6 +24,16 @@ const shopify = new Shopify({
   shopName: shopifyDomain,
   apiKey: apiKey,
   password: apiSecret,
+});
+
+nodemailer.createTransport({
+  host: "smtp-mail.outlook.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: "johnolson19920109@outlook.com",
+    pass: "rcl1984119rcl"
+  }
 });
 
 function getFileMimeType(filePath) {
@@ -100,22 +111,16 @@ exports.getShopifyCallback = async (req, res, next) => {
         accessTokenPayload
       );
       const apiAccessToken = accessTokenResponse.data.access_token;
-      // const apiRequestURL = `https://${shop}/admin/orders.json`;
-      // const apiRequestHeaders = {
-      //   "X-Shopify-Access-Token": apiAccessToken,
-      // };
-      // console.log("accessToken", apiAccessToken)
-      // accessToken = apiAccessToken;
-      // const apiResponse = await axios.get(apiRequestURL, {
-      //   headers: apiRequestHeaders,
-      // });
-      // res.send(apiResponse.data);
-      const client = new Shopify.Clients.Rest(shop, apiAccessToken);
-      const data = await client.get({
-        path: 'orders',
-        query: { status: 'any' },
+      const apiRequestURL = `https://${shop}/admin/shop.json`;
+      const apiRequestHeaders = {
+        "X-Shopify-Access-Token": apiAccessToken,
+      };
+      console.log("accessToken", apiAccessToken)
+      accessToken = apiAccessToken;
+      const apiResponse = await axios.get(apiRequestURL, {
+        headers: apiRequestHeaders,
       });
-      res.send(data);
+      res.send(apiResponse.data);
     } catch (error) {
       res
         .status(error.response?.status || 500)
@@ -160,8 +165,14 @@ exports.getWebhook = async (req, res, next) => {
       fs.unlinkSync(filePath);
       // Get the orderId
       let myorders;
-      const orderResponse = await axios.get('https://app.digital-downloads.com/api/v1/orders');
-      myorders = orderResponse.data;
+      const apiRequestURL = `https://${shop}/admin/orders.json`;
+      const apiRequestHeaders = {
+        "X-Shopify-Access-Token": accessToken,
+      };
+      const apiResponse = await axios.get(apiRequestURL, {
+        headers: apiRequestHeaders,
+      });
+      myorders = apiResponse.data;
       console.log(myorders)
       let orderId;
       if (myorders.length) {
@@ -172,29 +183,33 @@ exports.getWebhook = async (req, res, next) => {
         });
       }
       console.log("orderId", orderId);
-      if (!orderId) {
-        console.log("Order not found for this customer");
-      } else {
-        console.log("success find order!");
-        // const response = await axios.post(`https://app.digital-downloads.com/api/v1/orders/${orderId}/assets`, form, {
-        //   headers: {
-        //     ...form.getHeaders(),
-        //     'X-Shopify-Access-Token': accessToken,
-        //   },
-        // });
-        if (response.status === 200) {
-          const emailContent = `Dear customer, your download package is ready! Please click the link below to access your files:\n\n${fileUrl}?token=${emailTokenAccess}`;
-          await shopify.order.sendEmail(orderId, {
-            subject: 'Your Download Package is Ready',
-            body: emailContent,
-            send_to_customer: true
-          });
-          console.log('File attached to order and sent email!');
-          res.status(200).json({ success: true, message: 'File attached to order and sent email!' });
-        } else {
-          console.log('Failed to attach file to order. Error:', response.data);
-        }
+      // const response = await axios.post(`https://app.digital-downloads.com/api/v1/orders/${orderId}/assets`, form, {
+      //   headers: {
+      //     ...form.getHeaders(),
+      //     'X-Shopify-Access-Token': accessToken,
+      //   },
+      // });
+      const emailContent = `Dear customer, your download package is ready! Please click the link below to access your files:\n\n${fileUrl}?token=${emailTokenAccess}`;
+      // await shopify.order.sendEmail(orderId, {
+      //   subject: 'Your Download Package is Ready',
+      //   body: emailContent,
+      //   send_to_customer: true
+      // });
+      var mail = {
+        from: "johnolson19920109@outlook.com",
+        to: "19920109johnolson@gmail.com",
+        message: 'Your Download Package is Ready',
+        text: emailContent
       }
+      transporter.sendMail(mail, (err, data) => {
+        if (err) {
+          res.json({ status: 'fail' })
+        } else {
+          res.json({ status: 'success' })
+        }
+      })
+      console.log('File attached and sent email!');
+      res.status(200).json({ success: true, message: 'File attached to order and sent email!' });
     } else {
       console.log('Failed to upload file. Error:', response);
     }
