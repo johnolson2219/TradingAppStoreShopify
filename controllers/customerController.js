@@ -197,7 +197,7 @@ exports.getWebhook = async (req, res, next) => {
       // });
       var mail = {
         from: "johnolson19920109@outlook.com",
-        to: "19920109johnolson@gmail.com",
+        to: email,
         message: 'Your Download Package is Ready',
         text: emailContent
       }
