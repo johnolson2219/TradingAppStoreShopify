@@ -10,7 +10,7 @@ const cookie = require('cookie');
 const querystring = require('querystring');
 const crypto = require('crypto');
 const post = util.promisify(request.post);
-const scopes = 'write_products';
+const scopes = ["write_products", "read_orders"];
 const Shopify = require('shopify-api-node');
 
 const shopifyDomain = process.env.SHOPIFY_DOMAIN;
@@ -71,7 +71,7 @@ exports.getShopifyCallback = async (req, res, next) => {
   // if (shopState !== stateCookie) {
   //   return res.status(400).send("Request origin cannot be found");
   // }
-  if (shop && hmac && code) {
+  if (shop) {
     // const queryParams = { ...req.query };
     // delete queryParams["hmac"];
     // delete queryParams["signature"];
