@@ -189,7 +189,7 @@ exports.getWebhook = async (req, res, next) => {
       //     'X-Shopify-Access-Token': accessToken,
       //   },
       // });
-      const emailContent = `Dear customer, your download package is ready! Please click the link below to access your files:\n\n${fileUrl}?token=${emailTokenAccess}`;
+      const emailContent = `Dear customer, your download package is ready! Please click the link below to access your files:\n\n${response.file_url}`;
       // await shopify.order.sendEmail(orderId, {
       //   subject: 'Your Download Package is Ready',
       //   body: emailContent,
